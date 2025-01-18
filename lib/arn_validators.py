@@ -19,7 +19,8 @@ def ensure_valid_version_arn(version_arn: str):
     """
     ensure_valid_lambda_arn(version_arn)
     splited_with_colon = version_arn.split(':')
-    is_end_with_vernum = splited_with_colon[-1].isnumeric()    
-    if not is_end_with_vernum:
+    is_end_with_vernum = splited_with_colon[-1].isnumeric()
+    is_version_latest = splited_with_colon[-1] == '$LATEST'
+    if not is_end_with_vernum and not is_version_latest:
         raise LambdaVersionNotationInvalidException('not a valid lambda version arn.')
     

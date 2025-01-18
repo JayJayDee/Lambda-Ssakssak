@@ -1,30 +1,38 @@
-from typing import TypedDict, NotRequired
+from typing import TypedDict
 from typing_extensions import Unpack
-from lambda_version_mapper import LambdaVersionMapper
-from mypy_boto3_lambda import type_defs
-from boto3_type_annotations.lambda_ import LambdaClient
-import arn_validators
+from mypy_boto3_lambda import type_defs, LambdaClient
+from lib import arn_validators
 
 class Constructor(TypedDict):
     lambda_arn: str
-    client: LambdaClient
-
-class LambdaNotationInvalidException(Exception):
-    pass
 
 class LambdaMapper:
 
     def __init__(self, **kargs: Unpack[Constructor]):
         self._lambda_arn = kargs['lambda_arn']
-        self._client = kargs['client']
         arn_validators.ensure_valid_lambda_arn(self._lambda_arn)
 
     def str(self):
         return f'LambdaMapper({self._lambda_arn})'
     
-    def populate_versions(self) -> list[LambdaVersionMapper]:
+    @classmethod
+    def fetch_all(cls, client: LambdaClient):
+        next_marker: str | None = None
+        fetched_all_lambdas: list[LambdaMapper] = []
 
-        return 
+        while True:
+            response = client.list_functions(
+                **({'Marker': next_marker} if next_marker is not None else {})
+            )
+            next_marker = response['NextMarker'] if 'NextMarker' in response else None
+            raw_functions = response['Functions']
+            lambdas = list(map(lambda x : LambdaMapper.from_boto3_response(x), raw_functions))
+            fetched_all_lambdas.extend(lambdas)
+
+            if next_marker is None:
+                break
+
+        return fetched_all_lambdas
 
     @classmethod
     def from_boto3_response(cls, funcdef: type_defs.FunctionConfigurationTypeDef):
@@ -35,3 +43,7 @@ class LambdaMapper:
             lambda_arn=funcdef['FunctionArn'],
         )
         return version
+    
+    @property
+    def lambda_arn(self):
+        return self._lambda_arn
