@@ -1,10 +1,12 @@
 from typing import TypedDict, Literal
 from typing_extensions import Unpack
-from aws_client_factory import aws_client
+from mypy_boto3_lambda import LambdaClient
+import aws_factory
 
 LambdaVersionStatus = Literal['uninspected', 'has_deps', 'has_no_deps']
 
 class Constructor(TypedDict):
+    lambda_arn: str
     version_arn: str
     status: LambdaVersionStatus
 
@@ -22,8 +24,8 @@ class LambdaVersion:
         """
         make LambdaVersion instances from lambda arn string
         """
-        aws_client('lambda')
-        pass
+        client: LambdaClient = aws_factory.lambda_()
+        # TODO: do something with client
 
     @staticmethod
     def ensure_valid_lambda_arn(lambda_arn: str):
