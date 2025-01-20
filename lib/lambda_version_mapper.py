@@ -27,6 +27,9 @@ class LambdaVersionMapper:
             return True
         return False
     
+    def inspect_with_apigw(self):
+        pass
+    
     @classmethod
     def from_lambda(cls, lambda_mapper: LambdaMapper, client: LambdaClient):
         lambda_arn = lambda_mapper.lambda_arn
