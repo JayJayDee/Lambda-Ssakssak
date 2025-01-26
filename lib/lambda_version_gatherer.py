@@ -13,6 +13,10 @@ class GatherParam(TypedDict):
     num_threads: int
 
 class LambdaVersionGatherer:
+    """
+    Module for gathering all lambda versions within AWS Region
+    usage: LambdaVersionGatherer(client).gather(num_threads=10)
+    """
 
     def __init__(self, **kargs: Unpack[Constructor]):
         """
@@ -23,23 +27,25 @@ class LambdaVersionGatherer:
     def gather(self, **kargs: Unpack[GatherParam]):
         """
         Gethers all lambda function versions from aws
+        @param num_threads number of thread for LambdaVersionGatherer
         """
         num_threads_from_param = kargs['num_threads']
         num_threads = 5
         if num_threads_from_param:
             num_threads = num_threads_from_param
         
-        all_lambdas = self._gather_lambdas()
-        all_versions = self._gather_versions(all_lambdas, num_threads)
+        all_lambdas = self.__gather_lambdas()
+        all_versions = self.__gather_versions(all_lambdas, num_threads)
         return all_versions
 
-    def _gather_lambdas(self):
+    def __gather_lambdas(self):
         all_lambdas = LambdaMapper.fetch_all(self._client)
         return all_lambdas
     
-    def _gather_versions(self, all_lambdas: list[LambdaMapper], num_threads: int):
+    def __gather_versions(self, all_lambdas: list[LambdaMapper], num_threads: int):
         """
-        @param all_lambdas read all lambda functions
+        Gather all lambda versions from lambda functions runs within thread.
+        @param all_lambdas lambda functions
         @param num_threads number of threads for processing
         """
         queue = Queue()

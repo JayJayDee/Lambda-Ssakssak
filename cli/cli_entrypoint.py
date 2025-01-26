@@ -1,11 +1,12 @@
 import click
 
 @click.command()
-@click.option('--name', default='World', help='Name to greet.')
-@click.option('--test', default='test', help='Name to greet.')
-def main(name, test):
-    """A simple CLI tool."""
-    click.echo(f"Hello, {name}, {test}")
+@click.argument('mode')
+def main(mode: str):
+    """
+    Lambda-SsakSsak: A tiny tool for safely cleaning up old AWS lambda versions.
+    """
+    click.echo(f"Hello, {mode}")
 
 if __name__ == "__main__":
     main()
