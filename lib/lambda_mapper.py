@@ -18,7 +18,7 @@ class LambdaMapper:
     @classmethod
     def fetch_all(cls, client: LambdaClient):
         next_marker: str | None = None
-        fetched_all_lambdas: list[LambdaMapper] = []
+        fetched_all_lambdas: list[cls] = []
 
         while True:
             response = client.list_functions(
@@ -26,7 +26,7 @@ class LambdaMapper:
             )
             next_marker = response['NextMarker'] if 'NextMarker' in response else None
             raw_functions = response['Functions']
-            lambdas = list(map(lambda x : LambdaMapper.from_boto3_response(x), raw_functions))
+            lambdas = list(map(lambda x : cls.from_boto3_response(x), raw_functions))
             fetched_all_lambdas.extend(lambdas)
 
             if next_marker is None:
@@ -39,7 +39,7 @@ class LambdaMapper:
         """
         make LambdaVersion instances from boto3 response
         """
-        version = LambdaMapper(
+        version = cls(
             lambda_arn=funcdef['FunctionArn'],
         )
         return version

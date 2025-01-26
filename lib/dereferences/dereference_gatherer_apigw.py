@@ -16,3 +16,9 @@ class DereferenceGathererApiGw:
     def gather(self, **kargs: Unpack[GatherParam]):
         num_threads = kargs['num_threads']
         num_threads # TODO: do something with num_threads
+
+        all_restapis = self.__find_all_restapis()
+
+    def __find_all_restapis(self):
+        response = self._client.get_rest_apis(limit=500)
+        print(response['items'])
