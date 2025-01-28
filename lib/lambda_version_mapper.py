@@ -1,35 +1,55 @@
+from datetime import datetime
 from typing import TypedDict, Literal
 from typing_extensions import Unpack
 from mypy_boto3_lambda import type_defs, LambdaClient
 from lib.lambda_mapper import LambdaMapper
-import lib.arn_validators as arn_validators
+from dateutil import parser as date_parser
+from lib import arn_validators
 
-LambdaVersionStatus = Literal['uninspected', 'has_deps', 'has_no_deps']
+LambdaVersionStatus = Literal['uninspected', 'mark_tobe_delete', 'mark_tobe_retain']
+
+class DurationInvalidException(Exception):
+    pass
 
 class Constructor(TypedDict):
+    func_name: str
     version_arn: str
     version: str
+    last_modified_at: datetime
     status: LambdaVersionStatus
 
 class LambdaVersionMapper:
 
     def __init__(self, **kargs: Unpack[Constructor]):
-        self._version_arn = kargs['version_arn']
-        self._version = kargs['version']
-        self._status = kargs['status']
-        arn_validators.ensure_valid_version_arn(self._version_arn)
+        self.__func_name = kargs['func_name']
+        self.__version_arn = kargs['version_arn']
+        self.__version = kargs['version']
+        self.__status = kargs['status']
+        self.__last_modified_at = kargs['last_modified_at']
+        arn_validators.ensure_valid_version_arn(self.__version_arn)
 
     def str(self):
-        return f'LambaVersionMapper({self._version_arn})'
+        return f'LambaVersionMapper({self.__func_name}:{self.__version})'
     
     def is_latest_version(self):
-        if self._version == '$LATEST':
+        if self.__version == '$LATEST':
             return True
         return False
     
-    def inspect_with_apigw(self):
-        pass
+    @property()
+    def last_modified_at(self):
+        return self.__last_modified_at
     
+    def is_last_modified_in_duration(self, d_from: datetime, d_to: datetime):
+        """
+        returns LastModifiedAt of this lambda version is in between d_from, d_to
+        @param d_from duration start
+        @param d_to duration end
+        """
+        if d_from >= d_to:
+            raise DurationInvalidException('d_from must be past than d_to')
+        return d_from <= self.__last_modified_at <= d_to
+
     @classmethod
     def from_lambda(cls, lambda_mapper: LambdaMapper, client: LambdaClient):
         lambda_arn = lambda_mapper.lambda_arn
@@ -59,7 +79,9 @@ class LambdaVersionMapper:
         make LambdaVersion instances from boto3 response
         """
         version = LambdaVersionMapper(
+            func_name=funcdef['FunctionName'],
             version_arn=funcdef['FunctionArn'],
+            last_modified_at=date_parser.parse(funcdef['LastModified']),
             version=funcdef['Version'],
             status='uninspected'
         )

@@ -22,7 +22,7 @@ class LambdaVersionGatherer:
         """
         client: LambdaClient
         """
-        self._client = kargs['client']
+        self.__client = kargs['client']
 
     def gather(self, **kargs: Unpack[GatherParam]):
         """
@@ -39,7 +39,7 @@ class LambdaVersionGatherer:
         return all_versions
 
     def __gather_lambdas(self):
-        all_lambdas = LambdaMapper.fetch_all(self._client)
+        all_lambdas = LambdaMapper.fetch_all(self.__client)
         return all_lambdas
     
     def __gather_versions(self, all_lambdas: list[LambdaMapper], num_threads: int):
@@ -56,7 +56,7 @@ class LambdaVersionGatherer:
         lock_for_versions = Lock()
 
         def version_read_thread(lambda_: LambdaMapper):
-            versions = LambdaVersionMapper.from_lambda(lambda_, self._client)
+            versions = LambdaVersionMapper.from_lambda(lambda_, self.__client)
             with lock_for_versions:
                 all_versions.extend(versions)
             print(f'lambda versions gathered, size: {len(all_versions)}')

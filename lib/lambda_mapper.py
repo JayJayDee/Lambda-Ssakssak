@@ -9,11 +9,11 @@ class Constructor(TypedDict):
 class LambdaMapper:
 
     def __init__(self, **kargs: Unpack[Constructor]):
-        self._lambda_arn = kargs['lambda_arn']
-        arn_validators.ensure_valid_lambda_arn(self._lambda_arn)
+        self.__lambda_arn = kargs['lambda_arn']
+        arn_validators.ensure_valid_lambda_arn(self.__lambda_arn)
 
     def str(self):
-        return f'LambdaMapper({self._lambda_arn})'
+        return f'LambdaMapper({self.__lambda_arn})'
     
     @classmethod
     def fetch_all(cls, client: LambdaClient):
@@ -46,4 +46,4 @@ class LambdaMapper:
     
     @property
     def lambda_arn(self):
-        return self._lambda_arn
+        return self.__lambda_arn
