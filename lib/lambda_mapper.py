@@ -4,11 +4,13 @@ from mypy_boto3_lambda import type_defs, LambdaClient
 from lib import arn_validators
 
 class Constructor(TypedDict):
+    lambda_name: str
     lambda_arn: str
 
 class LambdaMapper:
 
     def __init__(self, **kargs: Unpack[Constructor]):
+        self.__lambda_name = kargs['lambda_name']
         self.__lambda_arn = kargs['lambda_arn']
         arn_validators.ensure_valid_lambda_arn(self.__lambda_arn)
 
@@ -41,9 +43,13 @@ class LambdaMapper:
         """
         version = cls(
             lambda_arn=funcdef['FunctionArn'],
+            lambda_name=funcdef['FunctionName'],
         )
         return version
     
     @property
     def lambda_arn(self):
         return self.__lambda_arn
+    
+    def lambda_name(self):
+        return self.__lambda_name
