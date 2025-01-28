@@ -6,9 +6,12 @@ from lib.lambda_mapper import LambdaMapper
 from dateutil import parser as date_parser
 from lib import arn_validators
 
-LambdaVersionStatus = Literal['uninspected', 'mark_tobe_delete', 'mark_tobe_retain']
+LambdaVersionStatus = Literal['uninspected', 'mark_tobe_deleted', 'mark_tobe_retained']
 
 class DurationInvalidException(Exception):
+    pass
+
+class InvalidOperationException(Exception):
     pass
 
 class Constructor(TypedDict):
@@ -33,6 +36,28 @@ class LambdaVersionMapper:
     
     def is_latest_version(self):
         if self.__version == '$LATEST':
+            return True
+        return False
+    
+    def mark_as_retained(self):
+        """
+        Marks this lambda version for retain. this version will NOT be deleted
+        """
+        self.__status = 'mark_tobe_retained'
+
+    def mark_as_deleted(self):
+        """
+        Marks this lambda version for DELETE. this version will be deleted!
+        """
+        if self.__status == 'mark_tobe_retained':
+            raise InvalidOperationException(f'{self.str()} is already mark as retained. cannot be changed to deleted')
+        self.__status = 'mark_tobe_deleted'
+
+    def is_to_be_deleted(self):
+        """
+        Returns whether this lambda version is to be deleted (True) or to be retained (False)
+        """
+        if self.__status == 'mark_tobe_deleted':
             return True
         return False
     
