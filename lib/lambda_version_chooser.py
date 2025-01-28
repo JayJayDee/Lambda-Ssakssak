@@ -19,5 +19,15 @@ class LambdaVersionChooser():
             if version.is_latest_version():
                 version.mark_as_retain()
 
-    def choose_with_duration(self, d_from: datetime, d_to: datetime):
+    def mark_deleted_all(self):
+        for version in self.__versions:
+            if version.is_can_be_mark_as_deleted():
+                version.mark_as_deleted()
+
+    def mark_deleted_after(self, d_after: datetime):
+        """
+        """
+        # TODO: mark version after d_after as a deleted
+
+    def mark_deleted_in_duration(self, d_from: datetime, d_to: datetime):
         pass

@@ -53,6 +53,11 @@ class LambdaVersionMapper:
             raise InvalidOperationException(f'{self.str()} is already mark as retained. cannot be changed to deleted')
         self.__status = 'mark_tobe_deleted'
 
+    def is_can_be_mark_as_deleted(self):
+        if self.__status != 'mark_tobe_retained':
+            return True
+        return False
+
     def is_to_be_deleted(self):
         """
         Returns whether this lambda version is to be deleted (True) or to be retained (False)

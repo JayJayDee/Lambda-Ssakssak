@@ -4,7 +4,7 @@ import click
 @click.argument('mode')
 def main(mode: str):
     """
-    Lambda-SsakSsak: A tiny tool for safely cleaning up old AWS lambda versions.
+    Lambda-SsakSsak: A tiny tool for cleaning up old AWS lambda versions.
     """
     click.echo(f"Hello, {mode}")
 
