@@ -2,3 +2,7 @@
 /build
 *.egg-info
 __pycache__
+/bin
+/lib
+/lib64
+site-packages
