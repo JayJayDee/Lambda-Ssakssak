@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TypedDict
 from typing_extensions import Unpack
-from lib.lambda_version_mapper import LambdaVersionMapper
+from lambda_version_mapper import LambdaVersionMapper
 
 class Constructor(TypedDict):
     versions: list[LambdaVersionMapper]

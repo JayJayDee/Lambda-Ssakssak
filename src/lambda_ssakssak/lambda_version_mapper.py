@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TypedDict, Literal
 from typing_extensions import Unpack
 from mypy_boto3_lambda import type_defs, LambdaClient
-from lib.lambda_mapper import LambdaMapper
+from lambda_mapper import LambdaMapper
 from dateutil import parser as date_parser
 from lib import arn_validators
 

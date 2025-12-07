@@ -1,8 +1,8 @@
 from typing import TypedDict
 from typing_extensions import Unpack
 from mypy_boto3_lambda import LambdaClient
-from lib.lambda_mapper import LambdaMapper
-from lib.lambda_version_mapper import LambdaVersionMapper
+from lambda_mapper import LambdaMapper
+from lambda_version_mapper import LambdaVersionMapper
 from queue import Queue
 from threading import Thread, Lock
 
