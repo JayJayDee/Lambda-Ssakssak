@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Install (editable) and run lambda_ssakssak test",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/python",
+      "args": [
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        "."
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "postDebugTask": "run-lambda-ssakssak-test"
+    }
+  ]
+}
