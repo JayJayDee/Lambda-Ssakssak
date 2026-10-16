@@ -1,7 +1,7 @@
 from typing import TypedDict
 from typing_extensions import Unpack
 from mypy_boto3_lambda import type_defs, LambdaClient
-from lib import arn_validators
+from lambda_ssakssak import arn_validators
 
 class Constructor(TypedDict):
     lambda_name: str
@@ -51,5 +51,6 @@ class LambdaMapper:
     def lambda_arn(self):
         return self.__lambda_arn
     
+    @property
     def lambda_name(self):
         return self.__lambda_name

@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import TypedDict, Literal
 from typing_extensions import Unpack
 from mypy_boto3_lambda import type_defs, LambdaClient
-from lambda_mapper import LambdaMapper
+from lambda_ssakssak.lambda_mapper import LambdaMapper
 from dateutil import parser as date_parser
-from lib import arn_validators
+from lambda_ssakssak import arn_validators
 
 LambdaVersionStatus = Literal['uninspected', 'mark_tobe_deleted', 'mark_tobe_retained']
 
@@ -66,9 +66,21 @@ class LambdaVersionMapper:
             return True
         return False
     
-    @property()
+    @property
     def last_modified_at(self):
         return self.__last_modified_at
+
+    @property
+    def func_name(self):
+        return self.__func_name
+
+    @property
+    def version(self):
+        return self.__version
+
+    @property
+    def version_arn(self):
+        return self.__version_arn
     
     def is_last_modified_in_duration(self, d_from: datetime, d_to: datetime):
         """
@@ -108,9 +120,12 @@ class LambdaVersionMapper:
         """
         make LambdaVersion instances from boto3 response
         """
+        arn = funcdef['FunctionArn']
+        if funcdef['Version'] == '$LATEST' and not arn.endswith(':$LATEST'):
+            arn = f'{arn}:$LATEST'
         version = LambdaVersionMapper(
             func_name=funcdef['FunctionName'],
-            version_arn=funcdef['FunctionArn'],
+            version_arn=arn,
             last_modified_at=date_parser.parse(funcdef['LastModified']),
             version=funcdef['Version'],
             status='uninspected'
